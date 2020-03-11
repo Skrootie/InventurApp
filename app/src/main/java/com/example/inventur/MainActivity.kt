@@ -4,16 +4,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.example.inventur.enums.Overviews
 import com.example.inventur.fragments.DeviceFragment
+import com.example.inventur.fragments.InventoryFragment
 import com.example.inventur.fragments.OverviewFragment
-import com.example.inventur.toolbars.DeviceToolbar
+import com.example.inventur.toolbars.EntryToolbar
 import com.example.inventur.toolbars.OverviewToolbar
 import org.json.JSONObject
 
-class MainActivity : AppCompatActivity() , OverviewFragment.OnAddClickListener, DeviceFragment.OnClickListener, OverviewToolbar.OnTrashClickedListener,
-    OverviewFragment.OnRecyclerItemClickListener, DeviceToolbar.OnBackClickListener{
+class MainActivity : AppCompatActivity() , OverviewFragment.OnAddClickListener, EntryToolbar.OnSaveClickListener, OverviewToolbar.OnTrashClickedListener,
+    OverviewFragment.OnRecyclerItemClickListener, EntryToolbar.OnBackClickListener, OverviewToolbar.OnBackClickListener{
 
     private val manager: FragmentManager = supportFragmentManager
+    private var overview: Overviews = Overviews.INVENTORIES
+    private var inventory: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,10 +28,14 @@ class MainActivity : AppCompatActivity() , OverviewFragment.OnAddClickListener, 
     override fun onAttachFragment(fragment: Fragment) {
         super.onAttachFragment(fragment)
         when (fragment) {
-            is OverviewFragment -> {fragment.setOnAddClickListener(this); fragment.setOnItemClickListener(this)}
-            is DeviceFragment -> fragment.setOnClickListener(this)
-            is OverviewToolbar -> fragment.setOnTrashButtonClicked(this)
-            is DeviceToolbar -> fragment.setOnBackClickListener(this)
+            is OverviewFragment -> {fragment.setOnAddClickListener(this)
+                fragment.setOnItemClickListener(this)}
+            is OverviewToolbar -> {
+                fragment.setOnTrashButtonClicked(this)
+                fragment.setOnBackButtonClicked(this)
+            }
+            is EntryToolbar -> {fragment.setOnBackClickListener(this)
+                fragment.setOnSaveClickListener(this)}
         }
     }
 
@@ -36,19 +44,40 @@ class MainActivity : AppCompatActivity() , OverviewFragment.OnAddClickListener, 
     //#######################################################
 
     override fun onAddButtonClicked() {
-        showEmptyDeviceFragment()
+        when (overview) {
+            Overviews.DEVICES -> showDeviceFragment()
+            Overviews.INVENTORIES -> showInventoryFragment()
+        }
     }
 
     override fun onSaveButtonClicked() {
-        val fragment = manager.findFragmentById(R.id.fragment_holder)
-        (fragment as DeviceFragment).saveAsString()
-        showOverviewFragment()
+        val fragment = manager.findFragmentById((R.id.fragment_holder))
+        when (overview) {
+            Overviews.DEVICES -> {
+                (fragment as DeviceFragment).saveAsJSON()
+                showOverviewFragment()
+            }
+            Overviews.INVENTORIES -> {
+                (fragment as InventoryFragment).saveAsJSON()
+                showOverviewFragment()
+            }
+        }
+
     }
 
     override fun onBackPressed() {
         when (manager.findFragmentById(R.id.fragment_holder)!!.tag) {
             "DEVICE_FRAGMENT" -> showOverviewFragment()
-            "OVERVIEW_FRAGMENT" -> super.onBackPressed()
+            "OVERVIEW_FRAGMENT" -> {
+                when (overview) {
+                    Overviews.INVENTORIES -> super.onBackPressed()
+                    Overviews.DEVICES -> {
+                        overview = Overviews.INVENTORIES
+                        showOverviewFragment()
+                    }
+                }
+            }
+            "INVENTORY_FRAGMENT" -> showOverviewFragment()
         }
     }
 
@@ -58,9 +87,21 @@ class MainActivity : AppCompatActivity() , OverviewFragment.OnAddClickListener, 
     }
 
     override fun onRecyclerItemClicked(jsonObject: JSONObject, position: Int) {
-        showFilledDeviceFragment(jsonObject, position)
-        //val fragment = manager.findFragmentById(R.id.fragment_holder)
-        //(fragment as DeviceFragment).loadEntry(jsonObject)
+        when (overview) {
+            Overviews.INVENTORIES -> {
+                overview = Overviews.DEVICES
+                inventory = jsonObject.getString("Inventurname")
+                showOverviewFragment()
+            }
+            Overviews.DEVICES -> {
+                showDeviceFragment(jsonObject, true, position)
+            }
+        }
+    }
+
+    override fun onOverviewBackButtonClicked() {
+        overview = Overviews.INVENTORIES
+        showOverviewFragment()
     }
 
     override fun onBackButtonClicked() {
@@ -73,39 +114,42 @@ class MainActivity : AppCompatActivity() , OverviewFragment.OnAddClickListener, 
 
     private fun showOverviewFragment() {
         val transaction = manager.beginTransaction()
-        val fragment = OverviewFragment.newInstance()
+        val fragment = OverviewFragment.newInstance(overview, inventory)
         transaction.replace(R.id.fragment_holder, fragment, "OVERVIEW_FRAGMENT")
         transaction.commit()
         showOverviewToolbar()
     }
 
-    private fun showEmptyDeviceFragment() {
+    private fun showDeviceFragment(jsonObject: JSONObject = JSONObject(), editMode: Boolean = false, position: Int = 0) {
         val transaction = manager.beginTransaction()
-        val fragment = DeviceFragment.newInstance()
+        val fragment = DeviceFragment.newInstance(jsonObject, editMode, position, inventory)
         transaction.replace(R.id.fragment_holder, fragment, "DEVICE_FRAGMENT")
         transaction.commit()
-        showDeviceToolbar()
+        showEntryToolbar()
     }
 
-    private fun showFilledDeviceFragment(jsonObject: JSONObject, position: Int) {
+    private fun showInventoryFragment() {
         val transaction = manager.beginTransaction()
-        val fragment = DeviceFragment.newInstance(jsonObject, true, position)
-        transaction.replace(R.id.fragment_holder, fragment, "DEVICE_FRAGMENT")
+        val fragment = InventoryFragment.newInstance()
+        transaction.replace(R.id.fragment_holder, fragment, "INVENTORY_FRAGMENT")
         transaction.commit()
-        showDeviceToolbar()
+        showEntryToolbar()
     }
 
     private fun showOverviewToolbar() {
         val transaction = manager.beginTransaction()
-        val toolbar = OverviewToolbar.newInstance()
+        val toolbar = when (overview) {
+            Overviews.DEVICES -> OverviewToolbar.newInstance(true, inventory)
+            Overviews.INVENTORIES -> OverviewToolbar.newInstance(false, "Inventuren")
+        }
         transaction.replace(R.id.toolbar_holder, toolbar, "OVERVIEW_TOOLBAR")
         transaction.commit()
     }
 
-    private fun showDeviceToolbar() {
+    private fun showEntryToolbar() {
         val transaction = manager.beginTransaction()
-        val toolbar = DeviceToolbar.newInstance()
-        transaction.replace(R.id.toolbar_holder, toolbar, "DEVICE_TOOLBAR")
+        val toolbar = EntryToolbar.newInstance()
+        transaction.replace(R.id.toolbar_holder, toolbar, "ENTRY_TOOLBAR")
         transaction.commit()
     }
 }

@@ -8,16 +8,26 @@ import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import com.example.inventur.R
 
-class DeviceToolbar : Fragment() {
+class EntryToolbar : Fragment() {
 
     lateinit var backButton: ImageButton
-    private lateinit var callback : OnBackClickListener
- 
+    lateinit var saveButton : ImageButton
+    private lateinit var backCallback : OnBackClickListener
+    private lateinit var saveCallback : OnSaveClickListener
+
     companion object {
-        fun newInstance() : DeviceToolbar {
-            val fragment = DeviceToolbar()
+        fun newInstance() : EntryToolbar {
+            val fragment = EntryToolbar()
             return fragment
         }
+    }
+
+    fun setOnSaveClickListener(callback: OnSaveClickListener) {
+        this.saveCallback = callback
+    }
+
+    interface OnSaveClickListener {
+        fun onSaveButtonClicked()
     }
 
     interface OnBackClickListener {
@@ -25,7 +35,7 @@ class DeviceToolbar : Fragment() {
     }
 
     fun setOnBackClickListener(callback : OnBackClickListener) {
-        this.callback = callback
+        this.backCallback = callback
     }
 
     override fun onCreateView(
@@ -34,16 +44,20 @@ class DeviceToolbar : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(R.layout.device_toolbar, container, false)
+        return inflater.inflate(R.layout.entry_toolbar, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //initalize backButton and set OnClickListener
-        backButton = view.findViewById(R.id.backButton)
+        //initialize backButton and saveButton and set OnClickListener
+        backButton = view.findViewById(R.id.trashButton)
         backButton.setOnClickListener() {
-            callback.onBackButtonClicked()
+            backCallback.onBackButtonClicked()
+        }
+        saveButton = view.findViewById(R.id.saveButton)
+        saveButton.setOnClickListener {
+            saveCallback.onSaveButtonClicked()
         }
     }
 

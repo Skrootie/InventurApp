@@ -2,4 +2,5 @@
     <string name="app_name">Inventur</string>
     <string name="device_number">Gerätenummer</string>
     <string name="device_position">Position</string>
+    <string name="device_count">Anzahl Geräte: %1$s</string>
 </resources>

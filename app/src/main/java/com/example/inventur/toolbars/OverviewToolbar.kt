@@ -5,19 +5,35 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.inventur.R
 
 class OverviewToolbar : Fragment() {
 
     lateinit var trashButton: ImageButton
-    private lateinit var callback : OnTrashClickedListener
+    lateinit var backButton: ImageButton
+    lateinit var captionTextView: TextView
+    var backButtonVisible = false
+    lateinit var caption: String
+    private lateinit var trashCallback : OnTrashClickedListener
+    private lateinit var backCallback : OnBackClickListener
 
     companion object {
-        fun newInstance() : OverviewToolbar {
+        fun newInstance(backButtonVisible: Boolean, caption: String) : OverviewToolbar {
             val fragment = OverviewToolbar()
+            fragment.backButtonVisible = backButtonVisible
+            fragment.caption = caption
             return fragment
         }
+    }
+
+    interface OnBackClickListener {
+        fun onOverviewBackButtonClicked()
+    }
+
+    fun setOnBackButtonClicked(callback: OnBackClickListener) {
+        this.backCallback = callback
     }
 
     interface OnTrashClickedListener {
@@ -25,7 +41,7 @@ class OverviewToolbar : Fragment() {
     }
 
     fun setOnTrashButtonClicked(callback : OnTrashClickedListener) {
-        this.callback = callback
+        this.trashCallback = callback
     }
 
     override fun onCreateView(
@@ -40,10 +56,22 @@ class OverviewToolbar : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //initalize trashButton and set OnClickListener
-        trashButton = view.findViewById(R.id.backButton)
+        //initialize trashButton and set OnClickListener
+        trashButton = view.findViewById(R.id.trashButton)
         trashButton.setOnClickListener {
-            callback.onTrashButtonClicked()
+            trashCallback.onTrashButtonClicked()
+        }
+
+        captionTextView = view.findViewById(R.id.caption)
+        captionTextView.text = caption
+
+        backButton = view.findViewById(R.id.backButton)
+        if (!backButtonVisible) {
+            backButton.visibility = View.INVISIBLE
+            captionTextView.textAlignment = View.TEXT_ALIGNMENT_INHERIT
+        }
+        backButton.setOnClickListener {
+            backCallback.onOverviewBackButtonClicked()
         }
     }
 

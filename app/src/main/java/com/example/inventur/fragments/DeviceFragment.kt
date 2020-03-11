@@ -1,18 +1,15 @@
 package com.example.inventur.fragments
 
 import android.content.Context
-import android.media.Image
 import android.os.Bundle
-import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.text.set
 import androidx.fragment.app.Fragment
 import com.example.inventur.R
-import kotlinx.android.synthetic.main.fragment_device.view.*
+import com.example.inventur.enums.Overviews
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -20,28 +17,20 @@ class DeviceFragment : Fragment() {
 
     lateinit var option : Spinner
     lateinit var ctx : Context
-    internal lateinit var callback: OnClickListener
-    lateinit var saveButton : ImageButton
     private lateinit var viewGroup: ViewGroup
     private lateinit var jsonObject: JSONObject
     private lateinit var views : MutableList<View>
     private var position: Int = 0
     private var editMode = false
-
-    fun setOnClickListener(callback: OnClickListener) {
-        this.callback = callback
-    }
-
-    interface OnClickListener {
-        fun onSaveButtonClicked()
-    }
+    private lateinit var inventory: String
 
     companion object {
-        fun newInstance(jsonObject: JSONObject = JSONObject(), editMode: Boolean = false, position: Int = 0) : DeviceFragment {
+        fun newInstance(jsonObject: JSONObject = JSONObject(), editMode: Boolean = false, position: Int = 0, inventory: String) : DeviceFragment {
             val fragment = DeviceFragment()
             fragment.jsonObject = jsonObject
             fragment.editMode = editMode
             fragment.position = position
+            fragment.inventory = inventory
             return fragment
         }
     }
@@ -68,10 +57,6 @@ class DeviceFragment : Fragment() {
         val options = arrayOf("Wandhalterung (Arm)", "Gestellhalterung (Arm)", "Gestellhalterung")
         option.adapter = ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, options)*/
 
-        saveButton = view.findViewById(R.id.saveButton)
-        saveButton.setOnClickListener {
-            callback.onSaveButtonClicked()
-        }
         val count = (view as ConstraintLayout).childCount
         views = mutableListOf<View>()
         for(i in 0 until count) {
@@ -85,17 +70,12 @@ class DeviceFragment : Fragment() {
     //################### internal functions ##################
     //#########################################################
 
-    fun saveAsString() {
+    fun saveAsJSON() {
         val sharedPref = activity!!.getPreferences(Context.MODE_PRIVATE) ?: return
         val defaultValue = ""
-        var oldJsonString = sharedPref.getString("geier", defaultValue)
-        var jsonArray : JSONArray
-
-        //check if there is already an object in sharedPref
-        jsonArray = when {
-            oldJsonString.isNullOrEmpty() -> JSONArray()
-            else -> JSONArray(oldJsonString)
-        }
+        val jsonString = sharedPref.getString(Overviews.DEVICES.toString(), defaultValue)
+        val jsonObject = JSONObject(jsonString!!)
+        val jsonArray = jsonObject.getJSONArray(inventory)
 
         //when editMode is active add the new entry to the JSONArray and replace it when editMode is off
         when (editMode){
@@ -107,7 +87,7 @@ class DeviceFragment : Fragment() {
 
         //save the new object in shared_prefs
         with (sharedPref.edit()) {
-            putString("geier", jsonArray.toString())
+            putString(Overviews.DEVICES.toString(), jsonObject.toString())
             commit()
         }
     }

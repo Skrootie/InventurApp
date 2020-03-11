@@ -1,21 +1,27 @@
 package com.example.inventur.adapters
 
+import android.app.Activity
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.inventur.R
+import com.example.inventur.enums.Overviews
 import com.example.inventur.fragments.OverviewFragment
 import org.json.JSONArray
+import org.json.JSONObject
 
-class OverviewAdapter (private val myDataset: JSONArray, var fragment: OverviewFragment, var deleteMode: Boolean) :
+class OverviewAdapter (private val myDataset: JSONArray, var fragment: OverviewFragment,
+                       var deleteMode: Boolean, val overview: Overviews, val activity: AppCompatActivity) :
         RecyclerView.Adapter<OverviewAdapter.RecyclerViewHolder>() {
 
     class RecyclerViewHolder (private val view: View) : RecyclerView.ViewHolder(view) {
-        val deviceNumber : TextView = view.findViewById(R.id.recyclerTextViewBig)
-        val location : TextView = view.findViewById(R.id.recyclerTextViewSmall)
+        val caption : TextView = view.findViewById(R.id.recyclerTextViewBig)
+        val smallText : TextView = view.findViewById(R.id.recyclerTextViewSmall)
         val delButton : ImageButton = view.findViewById(R.id.delButton)
 
         lateinit var deletedCallback : OnDeletedClickedListener
@@ -47,13 +53,13 @@ class OverviewAdapter (private val myDataset: JSONArray, var fragment: OverviewF
             fun onItemClicked(position: Int)
         }
 
-        fun setOnItemClicked(callback : OnItemClickedListener) {
+        private fun setOnItemClicked(callback : OnItemClickedListener) {
             this.itemCallback = callback
         }
     }
 
     //Create new views (invoked by the layout manager)
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OverviewAdapter.RecyclerViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
 
         //Create a new view
         val item = LayoutInflater.from(parent.context)
@@ -65,8 +71,28 @@ class OverviewAdapter (private val myDataset: JSONArray, var fragment: OverviewF
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
 
         //initialize views of the current item
-        holder.deviceNumber.text = myDataset.getJSONObject(position).getString("Gerätenummer")
-        holder.location.text = myDataset.getJSONObject(position).getString("Position")
+        when(overview) {
+            //initialize the textViews in the recyclerView
+            Overviews.DEVICES -> {
+                //set the number of the device and its location
+                holder.caption.text = myDataset.getJSONObject(position).getString("Gerätenummer")
+                holder.smallText.text = myDataset.getJSONObject(position).getString("Position")
+            }
+            Overviews.INVENTORIES -> {
+                val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+                val jsonString = sharedPref.getString(Overviews.DEVICES.toString(), "")
+                val jsonObject = JSONObject(jsonString)
+
+                //set the name of the inventory and the current device count
+                holder.caption.text = myDataset.getJSONObject(position).getString("Inventurname")
+                val deviceCount = when (jsonObject.getJSONArray(myDataset.getJSONObject(position).optString("Inventurname"))) {
+                    //check if there is currently any device in the inventory
+                    null -> 0
+                    else -> jsonObject.getJSONArray(myDataset.getJSONObject(position).getString("Inventurname")).length()
+                }
+                holder.smallText.text = activity.applicationContext.getString(R.string.device_count, deviceCount.toString())
+            }
+        }
         holder.bind(fragment)
 
         when (deleteMode) {

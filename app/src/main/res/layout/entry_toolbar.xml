@@ -22,13 +22,22 @@
             android:gravity="center_vertical">
 
             <ImageButton
-                android:id="@+id/backButton"
+                android:id="@+id/trashButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:background="#00FFFFFF"
                 android:layout_marginStart="10dp"
                 app:srcCompat="@android:drawable/ic_menu_revert" />
+
+            <ImageButton
+                android:id="@+id/saveButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="#00FFFFFF"
+                android:layout_marginEnd="10dp"
+                app:srcCompat="@android:drawable/ic_menu_save" />
 
         </RelativeLayout>
 

@@ -35,6 +35,7 @@
         <option value="Kotlin Class" />
         <option value="resourceFile" />
         <option value="layoutResourceFile" />
+        <option value="Kotlin Enum" />
         <option value="Kotlin File" />
       </list>
     </option>
@@ -45,8 +46,8 @@
   <component name="ProjectId" id="1YL4lEauZkkwsGo17owINp7WJvL" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="7BK0217B10000763" />
-    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-03-06T09:47:08.142Z" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="Pixel_2_API_24" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-03-11T07:28:15.457Z" />
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
     <property name="last_opened_file_path" value="$USER_HOME$/AppData/Local/GitHubDesktop/GitHubDesktop.exe" />
     <property name="settings.editor.selected.configurable" value="settings.github" />
@@ -153,19 +154,24 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/example/inventur/fragments/InventoryFragment.kt</url>
+          <line>29</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/example/inventur/fragments/OverviewFragment.kt</url>
-          <line>108</line>
-          <option name="timeStamp" value="15" />
+          <line>138</line>
+          <option name="timeStamp" value="37" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/example/inventur/fragments/DeviceFragment.kt</url>
-          <line>115</line>
-          <option name="timeStamp" value="31" />
+          <line>73</line>
+          <option name="timeStamp" value="45" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/com/example/inventur/fragments/DeviceFragment.kt</url>
-          <line>76</line>
-          <option name="timeStamp" value="32" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/example/inventur/fragments/OverviewFragment.kt</url>
+          <line>73</line>
+          <option name="timeStamp" value="51" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
