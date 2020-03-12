@@ -11,6 +11,7 @@ import com.example.inventur.R
 import com.example.inventur.enums.Overviews
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 
 class InventoryFragment : Fragment() {
 

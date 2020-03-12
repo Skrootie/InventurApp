@@ -2,6 +2,8 @@ package com.example.inventur.adapters
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,7 @@ import com.example.inventur.enums.Overviews
 import com.example.inventur.fragments.OverviewFragment
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.Exception
 
 class OverviewAdapter (private val myDataset: JSONArray, var fragment: OverviewFragment,
                        var deleteMode: Boolean, val overview: Overviews, val activity: AppCompatActivity) :
@@ -75,8 +78,14 @@ class OverviewAdapter (private val myDataset: JSONArray, var fragment: OverviewF
             //initialize the textViews in the recyclerView
             Overviews.DEVICES -> {
                 //set the number of the device and its location
-                holder.caption.text = myDataset.getJSONObject(position).getString("Gerätenummer")
-                holder.smallText.text = myDataset.getJSONObject(position).getString("Position")
+                val resources = activity.resources
+                val jsonObject = myDataset.getJSONObject(position)
+                try {
+                    holder.caption.text = jsonObject.getString(resources.getString(R.string.device_number))
+                    holder.smallText.text = jsonObject.getString(resources.getString(R.string.device_position))
+                } catch (e: Exception) {
+                    Log.i("DATA", "Error at loading device data: CORRUPTED_MEMORY \n $jsonObject")
+                }
             }
             Overviews.INVENTORIES -> {
                 val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)

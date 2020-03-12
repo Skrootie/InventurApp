@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Inventur</string>
-    <string name="device_number">Gerätenummer</string>
-    <string name="device_position">Position</string>
+    <string name="device_number_description">Inventar:</string>
+    <string name="device_number">Inventar</string>
+    <string name="device_position_description">Standort:</string>
+    <string name="device_position">Standort</string>
+    <string name="device_extra_description">Weitere Informationen</string>
+    <string name="device_extra">deviceExtra</string>
+    <string name="device_inventory_description">Funkschale:</string>
+    <string name="device_inventory">Funkschale</string>
     <string name="device_count">Anzahl Geräte: %1$s</string>
 </resources>

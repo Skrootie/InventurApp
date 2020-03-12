@@ -1,5 +1,6 @@
 package com.example.inventur.toolbars
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -59,6 +60,7 @@ class OverviewToolbar : Fragment() {
         //initialize trashButton and set OnClickListener
         trashButton = view.findViewById(R.id.trashButton)
         trashButton.setOnClickListener {
+            //trashButton.setImageResource(android.R.drawable.ic_menu_save)
             trashCallback.onTrashButtonClicked()
         }
 

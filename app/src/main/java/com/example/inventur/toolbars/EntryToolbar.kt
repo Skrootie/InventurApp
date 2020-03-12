@@ -31,7 +31,7 @@ class EntryToolbar : Fragment() {
     }
 
     interface OnBackClickListener {
-        fun onBackButtonClicked()
+        fun onEntryBackButtonClicked()
     }
 
     fun setOnBackClickListener(callback : OnBackClickListener) {
@@ -53,7 +53,7 @@ class EntryToolbar : Fragment() {
         //initialize backButton and saveButton and set OnClickListener
         backButton = view.findViewById(R.id.trashButton)
         backButton.setOnClickListener() {
-            backCallback.onBackButtonClicked()
+            backCallback.onEntryBackButtonClicked()
         }
         saveButton = view.findViewById(R.id.saveButton)
         saveButton.setOnClickListener {

@@ -144,6 +144,9 @@ class OverviewFragment : Fragment(), OverviewAdapter.RecyclerViewHolder.OnDelete
                     putString(overview.toString(), devices.toString())
                     commit()
                 }
+                if (overviewData.length() == 0) {
+                    switchDeleteMode()
+                }
             }
             Overviews.INVENTORIES -> {
                 val devices = JSONObject(sharedPref.getString(Overviews.DEVICES.toString(), "")!!)
@@ -153,6 +156,9 @@ class OverviewFragment : Fragment(), OverviewAdapter.RecyclerViewHolder.OnDelete
                     putString(Overviews.INVENTORIES.toString(), overviewData.toString())
                     putString(Overviews.DEVICES.toString(), devices.toString())
                     commit()
+                }
+                if (overviewData.length() == 0) {
+                    switchDeleteMode()
                 }
             }
         }
